@@ -43,6 +43,18 @@ func ClosePort(handle uintptr) {
 
 func ReadAndPublish(handle uintptr, client mqtt.Client, bufSize int, topic string) {
 	buf := make([]byte, bufSize)
+	messageChan := make(chan []byte, 100)
+
+	go func() {
+		for payload := range messageChan {
+			token := client.Publish(topic, 0, false, payload)
+			token.Wait()
+			if token.Error() != nil {
+				slog.Error("MQTT publish failed", "err", token.Error())
+			}
+		}
+	}()
+
 	for {
 		length := uint32(len(buf))
 		r, _, e := teVirtualMIDIGetData.Call(
@@ -58,11 +70,10 @@ func ReadAndPublish(handle uintptr, client mqtt.Client, bufSize int, topic strin
 		payload := make([]byte, length)
 		copy(payload, buf[:length])
 
-		token := client.Publish(topic, 0, false, payload)
-		token.Wait()
-
-		if token.Error() != nil {
-			slog.Error("MQTT publish failed", "err", token.Error())
+		select {
+		case messageChan <- payload:
+		default:
+			slog.Warn("Message channel full, dropping MIDI data")
 		}
 	}
 }
