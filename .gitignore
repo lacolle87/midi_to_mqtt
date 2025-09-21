@@ -34,3 +34,4 @@ go.work.sum
 /.idea/midi_to_mqtt.iml
 /.idea/modules.xml
 /.idea/vcs.xml
+/logs/

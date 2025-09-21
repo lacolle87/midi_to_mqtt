@@ -1,0 +1,16 @@
+mqtt:
+  broker: 192.168.1.48
+  port: 1883
+  topic: midi/events
+
+midi:
+  name: GoVirtualMIDI
+  buffer_size: 65535
+  max_sysex_length: 65535
+
+logger:
+  filename: "logs/app.log" # The log file name
+  max_size: 1              # Maximum size of a log file in MB before rotation
+  max_backups: 1           # Number of backup log files to retain
+  max_age: 7               # Maximum number of days to retain a log file
+  compress: true           # Whether to compress the rotated log files
