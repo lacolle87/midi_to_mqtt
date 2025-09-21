@@ -133,9 +133,9 @@ func readAndPublishMIDI(handle uintptr, client mqtt.Client, bufSize int, topic s
 			slog.Error("Error reading MIDI", "err", e)
 			panic(e)
 		}
-		payload := string(buf[:length])
+
+		payload := buf[:length]
 		token := client.Publish(topic, 0, false, payload)
 		token.Wait()
-		slog.Info("MIDI sent", "hex", payload)
 	}
 }
